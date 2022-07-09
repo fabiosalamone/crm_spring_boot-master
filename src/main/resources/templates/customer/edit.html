@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>CRM - It's Prodigy</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet"
+          crossorigin="anonymous">
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet"/>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">CRM - It's Prodigy</a>
+        </div>
+    </div>
+</nav>
+<div class="container" style="margin-top:80px">
+
+    <h1 class="pb-2 border-bottom row">
+        <span class="col-sm-6 pb-4">Cliente: <span th:text="${customerInstance.id}"></span> </span>
+        <span class="col-sm-6 text-sm-right pb-4">
+            <form action="/customer/delete" method="post" onsubmit="return confirm('Sei sicuro?');">
+                <input type="hidden" name="id" th:value="${customerInstance.id}"/>
+                <button class="btn btn-danger btn-outline-danger d-block d-sm-inline-block">Elimina cliente</button>
+            </form>
+        </span>
+    </h1>
+
+    <!-- Visualizza e modifica anagrafica cliente-->
+    <div class="mt-5 card card-body bg-light">
+        <form action="/customer/update" th:object="${customerInstance}" class="form" method="post" id="customerForm">
+
+            <div class="alert alert-danger" th:if="${! #fields.errors('all').isEmpty()}">
+                <li th:each="e : ${#fields.detailedErrors()}" th:class="${e.global}? globalerr : fielderr">
+                    <span th:text="${e.global}? '*' : ${e.fieldName}">The field name</span>
+                    <span th:text="${e.message}">The error message</span>
+                </li>
+            </div>
+
+            <input name="id" type="hidden" th:value="${customerInstance.id}" id="id"/>
+
+            <div class="row">
+                <div class="form-group col-6">
+                    <label>Nome</label>
+                    <input class="form-control" name="firstName" th:value="${customerInstance?.firstName}"/>
+                </div>
+                <div class="form-group col-6">
+                    <label>Cognome</label>
+                    <input class="form-control" name="lastName" th:value="${customerInstance?.lastName}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-6">
+                    <label>Email</label>
+                    <input class="form-control" name="emailAddress" th:value="${customerInstance?.emailAddress}" id="email"/>
+                </div>
+                <div class="form-group col-6">
+                    <label>Telefono</label>
+                    <input class="form-control" name="phoneNumber" th:value="${customerInstance?.phoneNumber}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col">
+                    <label>Indirizzo</label>
+                    <input class="form-control" name="address" th:value="${customerInstance?.address}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-6">
+                    <label>Città</label>
+                    <input class="form-control" name="city" th:value="${customerInstance?.city}"/>
+                </div>
+                <div class="form-group col-6">
+                    <label>Stato</label>
+                    <input class="form-control" name="country" th:value="${customerInstance?.country}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-success btn-block">Salva modifiche</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+   
+    <!-- Tabella preventivi-->
+    <div class="mt-5">
+        <span class="col-sm-6 text-sm-right pb-4">
+            <form action="/quote/create" method="post">
+                <input type="hidden" name="id" th:value="${customerInstance.id}"/>
+                <button class="btn btn-primary btn-outline-primary d-block d-sm-inline-block">Crea preventivo</button>
+            </form>
+        </span>
+        <table id="quoteTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+            <tr>
+                <th>Id Preventivo</th>
+                <th>Descrizione</th>
+                <th>Prezzo</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script>
+        const idCustomer = document.getElementById("id").value;
+        var url = '/quote/data_for_datatable/'+idCustomer;
+        console.log(url);
+        $(document).ready(function () {
+      
+          $('#quoteTable').DataTable({
+            "ajax": url,
+            "processing": true,
+            "serverSide": true,
+            "language" : {
+              "url" : "https://cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json"
+            },
+            "columns": [
+              {
+                "data": "id",
+              },
+              {
+                "data": "description",
+              },
+              {
+                "data": "price",
+              }
+            ]
+          });
+        });
+      </script>
+
+    <!-- Sezione invio email-->
+    <div class="mt-5 card card-body bg-light">
+        <div class="alert alert-info" th:if="${message}">
+            <h3 th:text="${message}"></h3>
+        </div>
+        <form action=""  class="form" method="post" id="emailForm">
+            <input name="id" type="hidden" th:name="customerId" id="emailFormId"/>
+            <div class="row">
+                <div class="form-group col-6">
+                    <label>Oggetto</label>
+                    <input class="form-control" name="object" th:name="object" id="object"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Testo</label>
+                <textarea class="form-control" name="text" th:name="text" id="text" rows="3"></textarea>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-success btn-block">Invia Email</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        const email = document.getElementById("email").value;
+        $("#emailForm").attr("action", "/sendMail/"+email);
+
+        const id = document.getElementById("id").value;
+        $("#emailFormId").attr("value", id);
+
+    </script>
+</div>
+
+</body>
+</html>
