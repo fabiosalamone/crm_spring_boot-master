@@ -13,6 +13,7 @@ public class SendGridConfig {
 	private String appKey;
 	@Bean
 	public SendGrid getSendGrid() {
+		System.out.println("key email: "+appKey);
 		return new SendGrid(appKey);
 		
 	}
