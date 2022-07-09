@@ -1,6 +1,7 @@
 package com.fabio.crm.controllers;
 
 import com.fabio.crm.data.entities.Customer;
+import com.fabio.crm.data.entities.Quote;
 import com.fabio.crm.data.repositories.CustomerRepository;
 import com.fabio.crm.services.CustomerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/customer")
@@ -120,6 +122,11 @@ public class CustomerWebController {
         if (bindingResult.hasErrors()) {
             return "customer/edit.html";
         } else {
+            Optional<Customer> customerResponse =  customerRepository.findById(customerInstance.getId());
+            Customer customerToUpdate = customerResponse.get();
+            List<Quote> quotes = customerToUpdate.getQuotes();
+            customerInstance.setQuotes(quotes);
+
             if (customerRepository.save(customerInstance) != null)
                 atts.addFlashAttribute("message", "Cliente aggiornato correttamente");
             else

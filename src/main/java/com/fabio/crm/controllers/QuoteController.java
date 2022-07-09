@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,13 +61,41 @@ public class QuoteController {
         
         System.out.println(id);
         model.addAttribute("quoteInstance", new Quote());
-
-        //
         
         model.addAttribute("customerId", id);
         return "quote/create.html";
     }
     
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable String id, Model model) {
+        Quote quoteInstance = quoteRepository.findById(Long.valueOf(id)).get();
+
+        model.addAttribute("quoteInstance", quoteInstance);
+        model.addAttribute("customerId", quoteInstance.getCustomer().getId());
+
+        return "quote/edit.html";
+    }
+    
+    @PostMapping("/update")
+    public String update(@Valid @ModelAttribute("quoteInstance") Quote quoteInstance,
+                         BindingResult bindingResult,
+                         Model model,
+                         @RequestParam(value = "customerId") String customerId,
+                         RedirectAttributes atts) {
+        if (bindingResult.hasErrors()) {
+            return "quote/edit.html";
+        } else {
+            System.out.println("customerid update: "+customerId);
+            Customer customer = customerService.getCustomerById(Long.parseLong(customerId));
+            quoteInstance.setCustomer(customer);
+
+            quoteRepository.save(quoteInstance);
+
+
+            return "redirect:/customer/edit/"+customerId;
+        }
+    }
+
     @PostMapping("/save")
     public String save(@Valid @ModelAttribute("quoteInstance") Quote quoteInstance,
                        BindingResult bindingResult,
@@ -83,6 +112,17 @@ public class QuoteController {
         
     }
     
+    @PostMapping("/delete")
+    public String delete(@RequestParam Long id, RedirectAttributes atts) {
+        Quote quoteInstance = quoteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente non trovato:" + id));
+
+                quoteRepository.delete(quoteInstance);
+
+        atts.addFlashAttribute("message", "Preventivo eliminato.");
+
+        return "redirect:/customer/edit/"+quoteInstance.getCustomer().getId();
+    }
     
     @RequestMapping(value = "/data_for_datatable/{customerID}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
