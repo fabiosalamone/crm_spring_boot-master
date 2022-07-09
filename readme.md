@@ -10,3 +10,5 @@ CRM che permette di
 **Backend**: Spring Boot (Java)
 
 **Database**: H2 
+
+E' possibile testare il suo funzionamento collegandosi a https://crm-test-salamone.herokuapp.com/
