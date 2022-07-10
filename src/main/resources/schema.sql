@@ -9,10 +9,10 @@ CREATE TABLE IF NOT EXISTS CUSTOMER(
   phone_number VARCHAR(24)
 );
 
-/*
+
 CREATE TABLE IF NOT EXISTS QUOTE(
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   description TINYTEXT,
-  price INT(11)
+  price INT(11),
+  customer_id INT(100)
 )
-*/

@@ -119,7 +119,7 @@ public class QuoteController {
 
                 quoteRepository.delete(quoteInstance);
 
-        atts.addFlashAttribute("message", "Preventivo eliminato.");
+        atts.addFlashAttribute("messagePreventivo", "Preventivo eliminato.");
 
         return "redirect:/customer/edit/"+quoteInstance.getCustomer().getId();
     }

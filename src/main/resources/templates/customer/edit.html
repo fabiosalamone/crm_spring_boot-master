@@ -107,6 +107,9 @@
                 <button class="btn btn-primary btn-outline-primary d-block d-sm-inline-block">Crea preventivo</button>
             </form>
         </span>
+        <div class="alert alert-info" th:if="${messagePreventivo}">
+            <h3 th:text="${messagePreventivo}"></h3>
+        </div>
         <table id="quoteTable" class="table table-striped table-bordered" style="width:100%">
             <thead>
             <tr>
