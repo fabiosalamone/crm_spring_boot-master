@@ -12,4 +12,5 @@ CRM che permette di
 **Database**: H2 
 
 E' possibile testare il suo funzionamento collegandosi a https://crm-test-salamone.herokuapp.com/
-Il primo avvio potrebbe impiegare qualche secondo
+
+Il primo avvio potrebbe richiedere qualche secondo.
